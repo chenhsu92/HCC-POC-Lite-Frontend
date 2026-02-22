@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCC Digital Twin - Healthcare System Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DXQNRL3U.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🏥 HCC Digital Twin</h1>
+                <p class="subtitle">Integrated Healthcare Platform Simulator</p>
+            </div>
+            <div class="api-status">
+                <span id="apiStatus" class="status-indicator">●</span>
+                <span id="apiStatusText">Connecting...</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="main-content">
+            <!-- System Overview Cards -->
+            <section class="metrics-section">
+                <h2>System Overview</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">👥</div>
+                        <div class="metric-content">
+                            <div class="metric-label">Total Patients</div>
+                            <div class="metric-value" id="totalPatients">-</div>
+                            <div class="metric-sublabel">
+                                <span id="activePatients">-</span> Active
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">🛏️</div>
+                        <div class="metric-content">
+                            <div class="metric-label">Bed Occupancy</div>
+                            <div class="metric-value" id="occupancyRate">-</div>
+                            <div class="metric-sublabel">
+                                <span id="occupiedBeds">-</span> / <span id="totalBeds">-</span> beds
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">👨‍⚕️</div>
+                        <div class="metric-content">
+                            <div class="metric-label">Medical Staff</div>
+                            <div class="metric-value" id="totalStaff">-</div>
+                            <div class="metric-sublabel">
+                                <span id="doctors">-</span> Doctors, <span id="nurses">-</span> Nurses
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">🚑</div>
+                        <div class="metric-content">
+                            <div class="metric-label">Daily Transports</div>
+                            <div class="metric-value" id="dailyTrips">-</div>
+                            <div class="metric-sublabel">
+                                <span id="activeVehicles">-</span> vehicles active
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Care Level Distribution -->
+            <section class="chart-section">
+                <div class="section-header">
+                    <h2>Care Level Distribution</h2>
+                    <button class="refresh-btn" onclick="loadCareLevelMetrics()">↻ Refresh</button>
+                </div>
+                <div class="chart-grid">
+                    <div class="chart-container">
+                        <canvas id="careLevelChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="capacityChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Service Utilization -->
+            <section class="chart-section">
+                <h2>Service Utilization</h2>
+                <div class="chart-grid-full">
+                    <div class="chart-container">
+                        <canvas id="servicesChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Simulation Controls -->
+            <section class="simulation-section">
+                <h2>Digital Twin Simulations</h2>
+                <div class="simulation-grid">
+                    <!-- Patient Flow Simulation -->
+                    <div class="simulation-card">
+                        <h3>📊 Patient Flow Projection</h3>
+                        <p>Simulate patient admissions and discharges over the next 30 days</p>
+                        <div class="simulation-control">
+                            <label>Forecast Days:</label>
+                            <input type="number" id="flowDays" value="30" min="7" max="90">
+                            <button class="sim-btn" onclick="runPatientFlowSimulation()">Run Simulation</button>
+                        </div>
+                        <div id="flowResults" class="simulation-results"></div>
+                    </div>
+
+                    <!-- Capacity Planning -->
+                    <div class="simulation-card">
+                        <h3>🏗️ Capacity Planning</h3>
+                        <p>Project bed capacity needs with patient growth</p>
+                        <div class="simulation-control">
+                            <label>Monthly Growth Rate:</label>
+                            <input type="number" id="growthRate" value="5" min="0" max="20" step="1">
+                            <span>%</span>
+                            <button class="sim-btn" onclick="runCapacityPlanning()">Run Simulation</button>
+                        </div>
+                        <div id="capacityResults" class="simulation-results"></div>
+                    </div>
+
+                    <!-- Transport Optimization -->
+                    <div class="simulation-card">
+                        <h3>🚗 Transport Optimization</h3>
+                        <p>Optimize vehicle routing and dispatch strategy</p>
+                        <div class="simulation-control">
+                            <button class="sim-btn" onclick="runTransportOptimization()">Optimize Routes</button>
+                        </div>
+                        <div id="transportResults" class="simulation-results"></div>
+                    </div>
+
+                    <!-- Staff Allocation -->
+                    <div class="simulation-card">
+                        <h3>👥 Staff Allocation</h3>
+                        <p>Calculate optimal doctor and nurse staffing levels</p>
+                        <div class="simulation-control">
+                            <button class="sim-btn" onclick="runStaffAllocation()">Calculate Needs</button>
+                        </div>
+                        <div id="staffResults" class="simulation-results"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Dashboard -->
+            <section class="analytics-section">
+                <h2>Risk Analytics</h2>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>⚠️ High-Risk Patients</h3>
+                        <div id="riskMetrics" class="risk-content">
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>💰 Financial Projections</h3>
+                        <div id="financialMetrics" class="financial-content">
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real-time Status -->
+            <section class="status-section">
+                <h2>System Status</h2>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <span class="status-label">Ventilators In Use:</span>
+                        <span class="status-value" id="ventilatorsInUse">-</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Dialysis Sessions Today:</span>
+                        <span class="status-value" id="dialysisSessions">-</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Rehab Sessions:</span>
+                        <span class="status-value" id="rehabSessions">-</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Home Care Visits:</span>
+                        <span class="status-value" id="homeCareVisits">-</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>HCC Digital Twin POC - Integrated Healthcare Platform Simulation</p>
+            <p class="footer-note">Based on synthetic data for demonstration purposes only</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
